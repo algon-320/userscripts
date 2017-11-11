@@ -1,4 +1,3 @@
-
 // ==UserScript==
 // @name       AtCoder Beta Color
 // @namespace  algon_320_atcoder_beta_color
