@@ -39,25 +39,35 @@ $.ajax({
     }
 });
 
-$(document).ajaxStop(function(){
-    //console.log(status_list);
-    $('tbody:first > tr').each(function(i,tr) {
-        p_url = $(tr).find('td > a').attr('href');
-        if(p_url in status_list) {
-            bg_color = '';
-            switch(status_list[p_url]) {
-                case 'AC':
-                    bg_color = 'rgb(212, 237, 201)';
-                    break;
-                case 'WA':
-                    bg_color = 'rgb(255, 227, 227)';
-                    break;
-                default:
-                    bg_color = 'lightyellow';
-                    break;
+if(/\/contests\/.+\/tasks$/.test(page_url)) {
+    $(document).ajaxStop(function() {
+        $('tbody:first > tr').each(function(i,tr) {
+            p_url = $(tr).find('td > a').attr('href');
+            if(p_url in status_list) {
+                bg_color = '';
+                switch(status_list[p_url]) {
+                    case 'AC':
+                        bg_color = 'rgb(212, 237, 201)';
+                        break;
+                    case 'WA':
+                        bg_color = 'rgb(255, 227, 227)';
+                        break;
+                    default:
+                        bg_color = 'lightyellow';
+                        break;
+                }
+                $(tr).attr('style', 'background-color:' + bg_color);
             }
-            $(tr).attr('style', 'background-color:' + bg_color);
+        });
+    });
+} else {
+    var task_url = page_url.match(/.+(\/contests\/.+\/tasks\/.+)$/)[1];
+    $(document).ajaxStop(function(){
+        if(task_url in status_list && status_list[task_url] == 'AC') {
+            var p_content = $('#task-statement').prev().html();
+            p_content += ' / <span style="color:green;">✔solved</span>';
+            $('#task-statement').prev().html(p_content);
         }
     });
-});
+}
 
