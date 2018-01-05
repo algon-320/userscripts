@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name       AtCoder Beta Color
 // @namespace  algon_320_atcoder_beta_color
-// @version    0.1
-// @description beta版atcoderコンテストの問題一覧のページにAC状況に応じて色を着けます。 
+// @version    0.2
+// @description beta版atcoderコンテストの問題一覧のページにAC状況に応じて色を着けます。
 // @match      https://beta.atcoder.jp/contests/*/tasks*
 // @author     algon-320
 // @require    https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
@@ -14,28 +14,36 @@ var status_list = {};
 
 $.ajax({
     type: 'GET',
-    url: 'https://beta.atcoder.jp/contests/' + contest_id + '/submissions/me/json',
-    dataType: 'json',
-    success: function(json) {
-        $.each(json,function(key,val) {
-            submission_url = 'https://beta.atcoder.jp/contests/' + contest_id + '/submissions/' + key;
-            $.ajax({
-                url: submission_url,
-                cache: false,
-                success: function(html) {
-                    tr = $(html).find('tbody:first');
-                    p_url = $(tr).find('tr:nth-of-type(2)').find('a').attr('href');
-                    judge_status = $(tr).find('tr:nth-of-type(7)').find('span').text();
-                    if(p_url in status_list) {
-                        if(judge_status == 'AC') {
-                            status_list[p_url] = 'AC';
-                        }
-                    } else {
-                        status_list[p_url] = judge_status;
+    url: 'https://beta.atcoder.jp/contests/' + contest_id + '/submissions/me',
+    dataType: 'html',
+    success: function(html) {
+        function check(doc) {
+            tbody = $(doc).find('tbody:first');
+            $(tbody).find('tr').each(function() {
+                p_url = $(this).find('td:nth-of-type(2)').find('a').attr('href');
+                judge_status = $(this).find('td:nth-of-type(7)').find('span').text();
+                if(p_url in status_list) {
+                    if(judge_status == 'AC') {
+                        status_list[p_url] = 'AC';
                     }
+                } else {
+                    status_list[p_url] = judge_status;
                 }
             });
-        });
+        }
+
+        check(html);
+        var page_num = $(html).find('ul.pagination').find('li').length;
+        for(var i = 1; i <= page_num; i++) {
+            var other_page_url = 'https://beta.atcoder.jp/contests/' + contest_id + '/submissions/me?page=' + i;
+            $.ajax({
+                url: other_page_url,
+                cache: false,
+                success: function(html2) {
+                    check(html2);
+                }
+            });
+        }
     }
 });
 
