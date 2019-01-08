@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name       AtCoder Beta Color
 // @namespace  algon_320_atcoder_beta_color
-// @version    0.2
-// @description beta版atcoderコンテストの問題一覧のページにAC状況に応じて色を着けます。
-// @match      https://beta.atcoder.jp/contests/*/tasks*
+// @version    0.3
+// @description atcoderコンテストの問題一覧のページにAC状況に応じて色を着けます。
+// @match      https://atcoder.jp/contests/*/tasks*
 // @author     algon-320
 // @require    https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // ==/UserScript==
@@ -14,7 +14,7 @@ var status_list = {};
 
 $.ajax({
     type: 'GET',
-    url: 'https://beta.atcoder.jp/contests/' + contest_id + '/submissions/me',
+    url: 'https://atcoder.jp/contests/' + contest_id + '/submissions/me',
     dataType: 'html',
     success: function(html) {
         function check(doc) {
@@ -35,7 +35,7 @@ $.ajax({
         check(html);
         var page_num = $(html).find('ul.pagination').find('li').length;
         for(var i = 1; i <= page_num; i++) {
-            var other_page_url = 'https://beta.atcoder.jp/contests/' + contest_id + '/submissions/me?page=' + i;
+            var other_page_url = 'https://atcoder.jp/contests/' + contest_id + '/submissions/me?page=' + i;
             $.ajax({
                 url: other_page_url,
                 cache: false,
